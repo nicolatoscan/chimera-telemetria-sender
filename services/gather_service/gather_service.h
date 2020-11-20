@@ -13,10 +13,8 @@
 #include <bson.h>
 #include <pthread.h>
 #include "../../state_machine/state_machine_condition.h"
-#include "../can_service/can_service.h"
-#include "../log_service/log_service.h"
-#include "../gps_service/gps_service.h"
-#include "structure_identifiers.h"
+
+#include "./can/gather_can_service.h"
 
 /* EXTERN */
 
