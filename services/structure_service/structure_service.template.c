@@ -22,25 +22,6 @@ static void* gatherGps(void *args);
 
 /* EXPORTED FUNCTIONS */
 
-data_t* structureCreate() {
-	data_t* data = (data_t*) malloc(sizeof(data_t));
-	data->steering_wheel.marker = 0;
-	// {{GENERATE_STRUCTURE_ALLOCATOR}}
-	return data;
-}
-
-void structureToBson(data_t *data, bson_t** bson_document) {
-	//{{GENERATE_BSON}}
-}
-
-void structureDelete(data_t *data) {
-	//{{GENERATE_STRUCTURE_DEALLOCATOR}}
-}
-
-void resetStructureId() {
-    condition.structure.id = 0;
-}
-
 gather_code gatherStructure(data_t *document) {
     gather_code outcome = GATHER_KEEP;
 
