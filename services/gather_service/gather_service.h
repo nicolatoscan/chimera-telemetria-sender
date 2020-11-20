@@ -15,6 +15,7 @@
 #include "../../state_machine/state_machine_condition.h"
 
 #include "./can/gather_can_service.h"
+#include "./master/gather_master_service.h"
 
 /* EXTERN */
 
@@ -33,13 +34,6 @@ void gatherSetup();
  * @return The empty data structure
 */
 data_t* gatherCreateData();
-
-/**
- * Converts a data structure to a bson document
- * @param document The document to translate in a bson document
- * @param bson_document The pointer where the created bson document will be stored
-*/
-void gatherDataToBson(data_t *document, bson_t **bson_document);
 
 /**
  * Deallocates the passed data structure

@@ -21,10 +21,6 @@ data_t* gatherCreateData() {
 	return data;
 }
 
-void gatherDataToBson(data_t *data, bson_t** bson_document) {
-	//{{GENERATE_BSON}}
-}
-
 void gatherDeleteData(data_t *data) {
 	//{{GENERATE_STRUCTURE_DEALLOCATOR}}
 }

@@ -60,6 +60,10 @@ result_codes init_state() {
         }
         debugGpsPort();
     }
+
+    gatherSetup();
+    gatherCanStartThread();
+    // start threads
     
     successStartedUp();
     mosquittoLogStartup();
@@ -67,7 +71,29 @@ result_codes init_state() {
     return INITIALIZED;
 }
 
-result_codes idle_state() {
+result_codes idle_state() { 
+    debugGeneric("Resetting structure id");
+    gatherResetDataId();
+
+    debugGeneric("Waiting the milliseconds");
+    gatherMasterWait();
+
+    debugGeneric("Swapping data head and data tail");
+    pthread_mutex_lock(&condition.structure.threads.data_head_mutex);
+    pthread_mutex_lock(&condition.structure.threads.data_tail_mutex);
+    gatherMasterSwap();
+    pthread_mutex_unlock(&condition.structure.threads.data_head_mutex);
+    pthread_mutex_unlock(&condition.structure.threads.data_tail_mutex);
+
+    debugGeneric("Enabling flush toilet");
+    pthread_mutex_lock(&condition.structure.threads.flush_toilet_mutex);
+    condition.structure.flush_toilet = 1;
+    pthread_cond_signal(&condition.structure.threads.flush_toilet_cond);
+
+    return condition.structure.toggle_state ? TOGGLE : REPEAT;
+}
+
+result_codes idle_state_back() {
     debugGeneric("Resetting structure id");
     resetStructureId();
 

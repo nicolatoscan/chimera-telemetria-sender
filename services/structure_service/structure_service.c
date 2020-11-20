@@ -22,10 +22,6 @@ static void* gatherGps(void *args);
 
 /* EXPORTED FUNCTIONS */
 
-void resetStructureId() {
-    condition.structure.id = 0;
-}
-
 gather_code gatherStructure(data_t *document) {
     gather_code outcome = GATHER_KEEP;
 
@@ -57,10 +53,6 @@ static double parseNmeaCoord(double coord) {
     return (left + right);
 }
 
-static double getMillisecondsFromTimespec(struct timespec time) {
-    return (double) (time.tv_sec * 1000 + 1.0E-6 * time.tv_nsec);
-}
-
 static long long int getCurrentTimestamp() {
 	struct timeb timer_msec;
 	if(!ftime(&timer_msec)) {
@@ -77,11 +69,6 @@ static void* gatherCan(void *args) {
     data_t* document = arguments->document;
     gather_code* outcome = arguments->outcome;
 
-    // Init timer variables
-    struct timespec t_start, t_end;
-    double start, end;
-    clock_gettime(CLOCK_MONOTONIC, &t_start);
-    start = getMillisecondsFromTimespec(t_start);
 
     // Declare other used variables
     int id = 0, data_left, data_right, first_byte;
@@ -642,11 +629,7 @@ static void* gatherCan(void *args) {
 
         }
 
-        // Get current milliesecond to check condition
-        clock_gettime(CLOCK_MONOTONIC, &t_end);
-        end = getMillisecondsFromTimespec(t_end);
-    }
-    while (end - start < condition.structure.sending_rate);
+        
 
     // Return NULL
     return NULL;
