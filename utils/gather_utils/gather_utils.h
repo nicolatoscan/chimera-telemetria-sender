@@ -7,7 +7,6 @@
 #include <time.h>
 #include <sys/timeb.h>
 #include <sys/sysinfo.h>
-#include "../log_utils/log_utils.h"
 #include "data_structure.h"
 
 /* FUNCTIONS */

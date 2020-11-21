@@ -29,7 +29,7 @@ void gatherMasterSwap() {
     condition.structure.data_head->sessionName = condition.mongodb.instance->session_name;
     condition.structure.data_head->id = condition.structure.id++;
 
-    swapPointers(&condition.structure.data_head, &condition.structure.data_tail);
+    swapPointers((void**) &condition.structure.data_head, (void**) &condition.structure.data_tail);
 
     pthread_mutex_unlock(&condition.structure.threads.data_head_mutex);
     pthread_mutex_unlock(&condition.structure.threads.data_tail_mutex);

@@ -16,6 +16,7 @@
 #include "../../state_machine/state_machine_condition.h"
 
 #include "./can/gather_can_service.h"
+#include "./gps/gather_gps_service.h"
 #include "./master/gather_master_service.h"
 #include "./sender/gather_sender_service.h"
 

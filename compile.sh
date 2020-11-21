@@ -18,6 +18,7 @@ gcc main.c -o sender.out \
     ./services/gather_service/gather_service.c \
     ./services/gather_service/master/gather_master_service.c \
     ./services/gather_service/can/gather_can_service.c \
+    ./services/gather_service/gps/gather_gps_service.c \
     ./services/gather_service/sender/gather_sender_service.c \
     ./state_machine/state_machine.c \
     -I/usr/include/libbson-1.0 \
