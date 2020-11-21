@@ -7,9 +7,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
-#include "../../services/mosquitto_service/mosquitto_service.h"
-#include "../../services/mongo_service/mongo_service.h"
-#include "../../state_machine/state_machine_condition.h"
+#include "../../../utils/gather_utils/gather_utils.h"
+#include "../../../services/mosquitto_service/mosquitto_service.h"
+#include "../../../services/mongo_service/mongo_service.h"
+#include "../../../state_machine/state_machine_condition.h"
 
 /* EXTERN */
 
@@ -19,7 +20,5 @@ extern condition_t condition;
 
 void gatherSenderStartThread();
 void gatherSenderStopThread();
-
-
 
 #endif

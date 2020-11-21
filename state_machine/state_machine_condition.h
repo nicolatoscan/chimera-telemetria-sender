@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <mosquitto.h>
 #include <mongoc.h>
-#include "state_machine_condition_structure.h"
+#include "../utils/gather_utils/data_structure.h"
 
 /* STRUCTURES */
 

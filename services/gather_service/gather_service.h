@@ -12,10 +12,12 @@
 #include <sys/sysinfo.h>
 #include <bson.h>
 #include <pthread.h>
+#include "../../utils/gather_utils/gather_utils.h"
 #include "../../state_machine/state_machine_condition.h"
 
 #include "./can/gather_can_service.h"
 #include "./master/gather_master_service.h"
+#include "./sender/gather_sender_service.h"
 
 /* EXTERN */
 
@@ -27,19 +29,6 @@ extern condition_t condition;
  * Initializes the structure object of the condition
 */
 void gatherSetup();
-
-/**
- * Creates and returns an empty data structure, that will contain all the messages gathered in a certain amount of 
- * time and translated to a bson document
- * @return The empty data structure
-*/
-data_t* gatherCreateData();
-
-/**
- * Deallocates the passed data structure
- * @param document The data structure to deallocate 
-*/
-void gatherDeleteData(data_t *document);
 
 /**
  * Resets the id of the data_head structure

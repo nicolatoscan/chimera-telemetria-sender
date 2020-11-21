@@ -63,7 +63,7 @@ result_codes init_state() {
 
     gatherSetup();
     gatherCanStartThread();
-    // start threads
+    gatherSenderStartThread();
     
     successStartedUp();
     mosquittoLogStartup();
@@ -72,111 +72,61 @@ result_codes init_state() {
 }
 
 result_codes idle_state() { 
-    debugGeneric("Resetting structure id");
+    debugGeneric("{MASTER} Resetting structure id");
     gatherResetDataId();
 
-    debugGeneric("Waiting the milliseconds");
+    debugGeneric("{MASTER} Waiting the milliseconds");
     gatherMasterWait();
 
-    debugGeneric("Swapping data head and data tail");
-    pthread_mutex_lock(&condition.structure.threads.data_head_mutex);
-    pthread_mutex_lock(&condition.structure.threads.data_tail_mutex);
+    debugGeneric("{MASTER} Swapping data head and data tail");
     gatherMasterSwap();
-    pthread_mutex_unlock(&condition.structure.threads.data_head_mutex);
-    pthread_mutex_unlock(&condition.structure.threads.data_tail_mutex);
-
-    debugGeneric("Enabling flush toilet");
-    pthread_mutex_lock(&condition.structure.threads.flush_toilet_mutex);
-    condition.structure.flush_toilet = 1;
-    pthread_cond_signal(&condition.structure.threads.flush_toilet_cond);
+    
+    debugGeneric("{MASTER} Enabling flush toilet");
+    gatherMasterEnableFlushToilet();
 
     return condition.structure.toggle_state ? TOGGLE : REPEAT;
 }
 
-result_codes idle_state_back() {
-    debugGeneric("Resetting structure id");
-    resetStructureId();
-
-    debugGeneric("Creating empty structure");
-    data_t *document = structureCreate();
-
-    debugGeneric("Gathering data");
-    gather_code gather_outcome = gatherStructure(document);
-
-    debugGeneric("Transforming document to bson");
-    bson_t *bson_document;
-    structureToBson(document, &bson_document);
-
-    debugGeneric("Sending to mqtt");
-    mosquittoSend(bson_document);
-
-    debugGeneric("Deallocating structure");
-    structureDelete(document);
-
-    debugGeneric("Deallocating bson message");
-    bson_destroy(bson_document);
-
-    switch (gather_outcome) {
-        case GATHER_KEEP:
-        case GATHER_IDLE:
-            return REPEAT;
-
-        case GATHER_ENABLE:
-            debugGeneric("Starting new session");
-            mongoStartSession();
-            infoNewSession();
-            mosquittoLogSession();
-
-            debugGeneric("Answering to the wheel");
-            canAnswerWheel(1);
-            return TOGGLE;
-
-        case GATHER_ERROR:
-            errorGatheringData();
-            return ERROR;
-    }
-}
-
 result_codes enabled_state() {
-    debugGeneric("Creating empty structure");
-    data_t *document = structureCreate();
+    // debugGeneric("Creating empty structure");
+    // data_t *document = structureCreate();
 
-    debugGeneric("Gathering data from can");
-    gather_code gather_outcome = gatherStructure(document);
+    // debugGeneric("Gathering data from can");
+    // gather_code gather_outcome = gatherStructure(document);
 
-    debugGeneric("Transforming document to bson");
-    bson_t *bson_document;
-    structureToBson(document, &bson_document);
+    // debugGeneric("Transforming document to bson");
+    // bson_t *bson_document;
+    // structureToBson(document, &bson_document);
 
-    debugGeneric("Sending to mqtt");
-    mosquittoSend(bson_document);
+    // debugGeneric("Sending to mqtt");
+    // mosquittoSend(bson_document);
 
-    debugGeneric("Inserting to mongo");
-    mongoInsert(bson_document);
-    size_t size; bson_as_relaxed_extended_json(bson_document, &size);
-    successInsertion(size);
-    mosquittoLogInsertion(size);
+    // debugGeneric("Inserting to mongo");
+    // mongoInsert(bson_document);
+    // size_t size; bson_as_relaxed_extended_json(bson_document, &size);
+    // successInsertion(size);
+    // mosquittoLogInsertion(size);
 
-    debugGeneric("Deallocating structure");
-    structureDelete(document);
+    // debugGeneric("Deallocating structure");
+    // structureDelete(document);
 
-    debugGeneric("Deallocating bson message");
-    bson_destroy(bson_document);
+    // debugGeneric("Deallocating bson message");
+    // bson_destroy(bson_document);
 
-    switch (gather_outcome) {
-        case GATHER_IDLE:
-            debugGeneric("Answering to the wheel");
-            canAnswerWheel(0);
-            return TOGGLE;
+    // switch (gather_outcome) {
+    //     case GATHER_IDLE:
+    //         debugGeneric("Answering to the wheel");
+    //         canAnswerWheel(0);
+    //         return TOGGLE;
 
-        case GATHER_KEEP:
-        case GATHER_ENABLE:
-            return REPEAT;
+    //     case GATHER_KEEP:
+    //     case GATHER_ENABLE:
+    //         return REPEAT;
             
-        case GATHER_ERROR:
-            errorGatheringData();
-            return ERROR;
-    }
+    //     case GATHER_ERROR:
+    //         errorGatheringData();
+    //         return ERROR;
+    // }
 }
 
 result_codes exit_state() {
