@@ -62,9 +62,10 @@ typedef struct {
     pthread_mutex_t data_head_mutex;
     pthread_mutex_t data_tail_mutex;
     pthread_mutex_t flush_toilet_mutex;
+    pthread_mutex_t toilet_flushed_mutex;
     pthread_mutex_t toggle_state_mutex;
     pthread_cond_t flush_toilet_cond;
-    pthread_cond_t toggle_state_cond;
+    pthread_cond_t toilet_flushed_cond;
 } structure_threads_condition_t;
 
 typedef struct {
@@ -73,7 +74,9 @@ typedef struct {
     data_t* data_head;
     data_t* data_tail;
     int flush_toilet;
+    int toilet_flushed;
     int toggle_state;
+    int enabled;
 
     structure_threads_condition_t threads;
 } structure_condition_t;

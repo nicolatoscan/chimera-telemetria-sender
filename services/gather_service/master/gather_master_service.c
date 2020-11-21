@@ -35,11 +35,38 @@ void gatherMasterSwap() {
     pthread_mutex_unlock(&condition.structure.threads.data_tail_mutex);
 }
 
+void gatherMasterResetToiletFlushed() {
+    pthread_mutex_lock(&condition.structure.threads.toilet_flushed_mutex);
+    condition.structure.toilet_flushed = 0;
+    pthread_cond_signal(&condition.structure.threads.toilet_flushed_cond);
+    pthread_mutex_unlock(&condition.structure.threads.toilet_flushed_mutex);
+}
+
 void gatherMasterEnableFlushToilet() {
     pthread_mutex_lock(&condition.structure.threads.flush_toilet_mutex);
     condition.structure.flush_toilet = 1;
     pthread_cond_signal(&condition.structure.threads.flush_toilet_cond);
     pthread_mutex_unlock(&condition.structure.threads.flush_toilet_mutex);
+}
+
+void gatherMasterWaitToiletFlushed() {
+    pthread_mutex_lock(&condition.structure.threads.toilet_flushed_mutex);
+    while (!condition.structure.toilet_flushed) {
+        pthread_cond_wait(&condition.structure.threads.toilet_flushed_cond, &condition.structure.threads.toilet_flushed_mutex);
+    }
+    pthread_mutex_unlock(&condition.structure.threads.toilet_flushed_mutex);
+}
+
+void gatherStartNewSession() {
+    debugGeneric("Starting new session");
+    mongoStartSession();
+    infoNewSession();
+    mosquittoLogSession();
+}
+
+void gatherAnswerWheel(int enabled) {
+    debugGeneric("Answering to the wheel");
+    canAnswerWheel(enabled);
 }
 
 /* INTERNAL FUNCTIONS DEFINITIONS */

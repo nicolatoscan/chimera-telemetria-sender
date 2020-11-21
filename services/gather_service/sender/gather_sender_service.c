@@ -11,10 +11,10 @@ static void* senderSend(void *args);
 
 /* EXPORTED FUNCTIONS */
 
-void gatherSenderStartThread() {
+void gatherSenderStartThread(int enabled) {
 	pthread_attr_init(&gather_sender_thread_attr);
 	pthread_attr_setdetachstate(&gather_sender_thread_attr, PTHREAD_CREATE_JOINABLE);
-	pthread_create(&gather_sender_thread, &gather_sender_thread_attr, &senderSend, NULL);
+	pthread_create(&gather_sender_thread, &gather_sender_thread_attr, &senderSend, (void*) ((long) enabled));
 	pthread_attr_destroy(&gather_sender_thread_attr);
 }
 
@@ -25,6 +25,9 @@ void gatherSenderStopThread() {
 /* INTERNAL FUNCTIONS DEFINITIONS */
 
 static void* senderSend(void *args) {
+    // Get enabled state
+    int enabled = (int) ((long) args);
+
     while (1) {
         // Waits until it must flush the toilet
         debugGeneric("{SENDER} Waiting for flushing toilet");
@@ -48,7 +51,14 @@ static void* senderSend(void *args) {
             // Sends the data over mosquitto
             debugGeneric("{SENDER} Sending over mosquitto");
             mosquittoSend(bson_document);
-            // TODO: mongo
+            
+            if (enabled) {
+                debugGeneric("{SENDER} Inserting to mongo");
+                mongoInsert(bson_document);
+                size_t size; bson_as_relaxed_extended_json(bson_document, &size);
+                successInsertion(size);
+                mosquittoLogInsertion(size);
+            }
 
             // Destroys the bson document
             debugGeneric("{SENDER} Destroying bson document");
@@ -66,6 +76,13 @@ static void* senderSend(void *args) {
         // Unlocks data tail
         debugGeneric("{SENDER} Unlocking data tail");
         pthread_mutex_unlock(&condition.structure.threads.data_tail_mutex);
+
+        // Toilet is flushed
+        debugGeneric("{SENDER} Setting toilet flushed to true");
+        pthread_mutex_lock(&condition.structure.threads.toilet_flushed_mutex);
+        condition.structure.toilet_flushed = 1;
+        pthread_cond_signal(&condition.structure.threads.toilet_flushed_cond);
+        pthread_mutex_unlock(&condition.structure.threads.toilet_flushed_mutex);
     }
 }
 

@@ -20,10 +20,11 @@
 extern condition_t condition;
 
 /* MACHINE */
-typedef enum { INIT, IDLE, ENABLED, EXIT } state_codes;
-typedef enum { ERROR, INITIALIZED, REPEAT, TOGGLE } result_codes;
+typedef enum { INIT, RESTART, IDLE, ENABLED, EXIT } state_codes;
+typedef enum { ERROR, INITIALIZED, REPEAT, TOGGLE, DISABLE, ENABLE } result_codes;
 
 result_codes init_state();
+result_codes restart_state();
 result_codes idle_state();
 result_codes enabled_state();
 result_codes exit_state();

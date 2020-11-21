@@ -31,6 +31,8 @@ extern condition_t condition;
 */
 void gatherSetup();
 
+void gatherSetupRestart();
+
 /**
  * Resets the id of the data_head structure
 */

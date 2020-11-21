@@ -11,10 +11,10 @@ static void* parseCanMessages(void *args);
 
 /* EXPORTED FUNCTIONS */
 
-void gatherCanStartThread() {
+void gatherCanStartThread(int enabled) {
 	pthread_attr_init(&gather_can_thread_attr);
 	pthread_attr_setdetachstate(&gather_can_thread_attr, PTHREAD_CREATE_JOINABLE);
-	pthread_create(&gather_can_thread, &gather_can_thread_attr, &parseCanMessages, NULL);
+	pthread_create(&gather_can_thread, &gather_can_thread_attr, &parseCanMessages, (void*) ((long) enabled));
 	pthread_attr_destroy(&gather_can_thread_attr);
 }
 
@@ -25,6 +25,9 @@ void gatherCanStopThread() {
 /* INTERNAL FUNCTIONS DEFINITIONS */
 
 static void* parseCanMessages(void *args) {
+	// Getting enabled arg
+	int enabled = (int) ((long) args);
+
     // Declare used variables
     data_t* document;
     int id = 0, data_left, data_right, first_byte;
@@ -539,28 +542,41 @@ static void* parseCanMessages(void *args) {
 					int pilot_index = (data_left >> 8) & 0xFF;
 					int race_index = data_left & 0xFF;
 
-					// switch (status) {
-					// 	case 0:
-					// 		*outcome = GATHER_IDLE;
-					// 		break;
-					// 	case 1:
-					// 		if (pilot_index >= condition.session.pilots_count) {
-					// 			logWarning("Error in structure: invalid pilot from wheel");
-					// 			*outcome = GATHER_ERROR;
-					// 		} else if (race_index >= condition.session.races_count) {
-					// 			logWarning("Error in structure: invalid race from wheel");
-					// 			*outcome = GATHER_ERROR;
-					// 		} else {
-					// 			condition.session.selected_pilot = pilot_index;
-					// 			condition.session.selected_race = race_index;
-					// 			*outcome = GATHER_ENABLE;
-					// 		}
-					// 		break;
-					// 	default:
-					// 		logWarning("Error in structure: invalid status from wheel");
-					// 		*outcome = GATHER_ERROR;
-					// 		break;
-					// }
+					if (status == 0) {
+						if (enabled == 0) {
+							logWarning("Error in structure: telemetry already disabled");
+						}
+						else {
+							pthread_mutex_lock(&condition.structure.threads.toggle_state_mutex);
+							condition.structure.toggle_state = 1;
+							pthread_mutex_unlock(&condition.structure.threads.toggle_state_mutex);
+						}
+					}
+					else if (status == 1) {
+						if (enabled == 1) {
+							logWarning("Error in structure: telemetry already enabled");
+						}
+						else {
+							if (pilot_index >= condition.session.pilots_count) {
+								logWarning("Error in structure: invalid pilot from wheel. Using default pilot.");
+								pilot_index = 0;
+							} 
+							if (race_index >= condition.session.races_count) {
+								logWarning("Error in structure: invalid race from wheel. Using default race.");
+								race_index = 0;
+							} 
+
+							condition.session.selected_pilot = pilot_index;
+							condition.session.selected_race = race_index;
+							
+							pthread_mutex_lock(&condition.structure.threads.toggle_state_mutex);
+							condition.structure.toggle_state = 1;
+							pthread_mutex_unlock(&condition.structure.threads.toggle_state_mutex);
+						}
+					}
+					else {
+						logWarning("Error in structure: invalid status from wheel");
+					}
 				}
 				break;
 		}
