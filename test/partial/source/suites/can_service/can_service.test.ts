@@ -95,6 +95,7 @@ export default async function () {
                 }],
                 async (prop) => {
                     const res = ((await prop['readerPromise']).stdout as string).split(' ');
+                    console.log(res);
                     assert.equal(res[0], prop.expected[0]);
                     assert.equal(res[1], prop.expected[1]);
                 },
