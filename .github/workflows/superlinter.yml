@@ -31,4 +31,4 @@ jobs:
         run: screen -dm mosquitto
       
       - run: sudo npm install && cd test && sudo npm install
-      - run: cd test && npm test
+      - run: cd test && sudo npm test
