@@ -30,7 +30,7 @@ jobs:
           version: ${{ matrix.mosquitto-version }}
 
       - name: Install dependecies
-        run: sudo DEBIAN_FRONTEND='noninteractive' apt install -y build-essential git sudo curl wget nano can-utils gnupg screen libmongoc-dev libbson-dev libmosquitto-dev
+        run: sudo DEBIAN_FRONTEND='noninteractive' apt install -y build-essential can-utils gnupg libmongoc-dev libbson-dev libmosquitto-dev
 
       - name: Open can
         run: sudo modprobe vcan && sudo ip link add dev can0 type vcan && sudo ip link set up can0 && ifconfig
