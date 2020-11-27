@@ -34,6 +34,12 @@ jobs:
       - name: Open can
         run: sudo modprobe vcan && sudo ip link add dev can0 type vcan && sudo ip link set up can0 && ifconfig
 
-      - run: sudo npm install && cd test && sudo npm install
-      - run: npm run compile
-      - run: cd test && sudo npm test
+      - name: Install node dependencies
+        run: sudo npm install && cd test && sudo npm install
+      
+      - name: Compile C
+        run: npm run compile
+      
+      - name: Test
+        run: cd test && sudo npm test
+        timeout-minutes: 5
