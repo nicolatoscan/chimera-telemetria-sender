@@ -1,25 +1,27 @@
 name: Super-Linter
 
-# Run this workflow every time a new commit pushed to your repository
-on: push
+on: [push]
 
 jobs:
-  # Set the job key. The key is displayed as the job name
-  # when a job name is not provided
-  super-lint:
-    # Name the Job
-    name: Lint code base
-    # Set the type of machine to run on
+  test:
     runs-on: ubuntu-latest
 
-    steps:
-      # Checks out a copy of your repository on the ubuntu-latest machine
-      - name: Checkout code
-        uses: actions/checkout@v2
+    strategy:
+      matrix:
+        node-version: [12.x]
 
-      # Runs the Super-Linter action
-      - name: Run Super-Linter
-        uses: github/super-linter@v3
-        env:
-          DEFAULT_BRANCH: master
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependecies
+        run: sudo DEBIAN_FRONTEND='noninteractive' apt install -y build-essential git sudo curl wget nano can-utils gnupg mosquitto screen libmongoc-dev libbson-dev libmosquitto-dev
+
+      - name: run mosquitto
+        run: screen -dm mosquitto
+      
+      - run: sudo npm install && cd test && sudo npm install
+      - run: cd test && npm test
