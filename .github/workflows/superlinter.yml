@@ -1,5 +1,4 @@
-name: Super-Linter
-
+name: Tests
 on: [push]
 
 jobs:
@@ -24,11 +23,13 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
-      - name: Install dependecies
-        run: sudo DEBIAN_FRONTEND='noninteractive' apt install -y build-essential git sudo curl wget nano can-utils gnupg mosquitto screen libmongoc-dev libbson-dev libmosquitto-dev
+      - name: Start Mosquitto
+        uses: namoshek/mosquitto-github-action@v0.1.0
+        with:
+          version: '1.6'
 
-      - name: run mosquitto
-        run: screen -dm mosquitto
-      
+      - name: Install dependecies
+        run: sudo DEBIAN_FRONTEND='noninteractive' apt install -y build-essential git sudo curl wget nano can-utils gnupg screen libmongoc-dev libbson-dev libmosquitto-dev
+
       - run: sudo npm install && cd test && sudo npm install
       - run: cd test && sudo npm test
