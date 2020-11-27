@@ -42,4 +42,4 @@ jobs:
       
       - name: Test
         run: cd test && sudo npm test
-        timeout-minutes: 5
+        timeout-minutes: 6
