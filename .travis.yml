@@ -1,0 +1,19 @@
+language : 
+ - node_js
+ - c
+node_js:
+ - node
+services:
+ - mongodb
+compiler:
+ - gcc
+ - clang
+os:
+ - linux
+install:
+ - sudo apt update
+ - sudo DEBIAN_FRONTEND='noninteractive' apt install -y build-essential git sudo curl wget nano can-utils gnupg mosquitto screen libmongoc-dev libbson-dev libmosquitto-dev
+ - screen -dm mosquitto
+ - npm install
+ - cd test
+ - npm install
